@@ -1,0 +1,28 @@
+.single-post-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 32px;
+}
+
+.single-post-container {
+    background: white;
+    width: 50%;
+    padding: 1rem 2rem;
+    border: 1px solid lightcyan;
+    border-radius: 0.5rem;
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.post-info-container {}
+
+.post-comments-container {
+    margin-top: 6px;
+    border-top: 1px solid black;
+    overflow: scroll;
+}
