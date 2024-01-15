@@ -43,7 +43,7 @@ const SinglePost = ({ post }: SinglePostProps) => {
     useEffect(() => {
         if (postIdParam && getPost) getPost(postIdParam)
         if (post && getPostComments) getPostComments(post.id)
-    }, [post, postIdParam])
+    }, [postIdParam])
 
     return (
         <div key={post?.id} className='single-post-wrapper'>

@@ -8,7 +8,6 @@
 }
 
 .single-post-container {
-    max-width: 70%;
     width: 1000px;
     background: white;
     padding: 16px 24px;
@@ -31,5 +30,18 @@
 @media screen and (max-width: 500px) {
     .single-post-container {
         width: 100%;
+        font-size: 14px;
+        padding: 5px 10px;
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    .single-post-wrapper {
+        gap: 0px;
+    }
+
+    .single-post-container {
+        width: 80%;
+        padding: 5px 10px;
     }
 }
