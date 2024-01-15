@@ -3,6 +3,7 @@ import { AppContext, PostWithAuthor } from 'contexts/AppContext'
 
 import './styles.css';
 import SinglePost from 'components/post';
+import LoggerHOC from 'utils/logger-hoc';
 
 type PostsHomeProps = {
     posts: PostWithAuthor[]
@@ -24,9 +25,9 @@ const PostsHome = ({ posts }: PostsHomeProps) => {
                 onChange={(event) => setSearchUser(event.target.value)}
                 placeholder='Search posts by user'
             />
-            {filteredPosts.map(post => <SinglePost key={post.id} post={post} />)}
+            {filteredPosts.length > 0 ? filteredPosts.map(post => <SinglePost key={post.id} post={post} />) : <h3>No posts.</h3>}
         </div>
     )
 }
 
-export default PostsHome
+export default LoggerHOC(PostsHome)

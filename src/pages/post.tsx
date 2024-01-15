@@ -2,13 +2,14 @@ import React, { useContext, useEffect } from 'react'
 import { AppContext } from 'contexts/AppContext';
 import { useParams } from "react-router-dom";
 import SinglePost from 'components/post';
+import LoggerHOC from 'utils/logger-hoc';
 
 const Post = () => {
     const { postId } = useParams();
     const { post, getPost } = useContext(AppContext)
 
     useEffect(() => {
-        if (!post && getPost) getPost(postId)
+        if (getPost) getPost(postId)
     }, []);
 
     return (
@@ -16,4 +17,4 @@ const Post = () => {
     )
 }
 
-export default Post;
+export default LoggerHOC(Post);

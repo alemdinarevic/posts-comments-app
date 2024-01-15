@@ -13,6 +13,7 @@ type ContextType = {
     users: User[],
     posts: PostWithAuthor[],
     post?: Post,
+    setPost: React.Dispatch<React.SetStateAction<Post | undefined>>,
     getPost?: (id: number | string | undefined) => Promise<Post>,
     searchUser: string,
     setSearchUser: React.Dispatch<React.SetStateAction<string>>
@@ -21,6 +22,7 @@ type ContextType = {
 const INIT_STATE = {
     users: [],
     posts: [],
+    setPost: () => { },
     searchUser: '',
     setSearchUser: () => { }
 }
@@ -81,7 +83,7 @@ const AppContextProvider = ({ children }: ContextProps) => {
     }, [])
 
     return (
-        <AppContext.Provider value={{ users, posts: postsWithUsers, post, getPost, searchUser, setSearchUser }}>
+        <AppContext.Provider value={{ users, posts: postsWithUsers, post, setPost, getPost, searchUser, setSearchUser }}>
             {children}
         </AppContext.Provider>
     )

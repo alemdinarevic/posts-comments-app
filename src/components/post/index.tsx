@@ -5,22 +5,26 @@ import './styles.css';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { AppContext } from 'contexts/AppContext';
 import server from 'api/server';
+import LoggerHOC from 'utils/logger-hoc';
 
 type SinglePostProps = {
-    post: Post | undefined,
+    post?: Post,
 }
 
 const SinglePost = ({ post }: SinglePostProps) => {
     const navigate = useNavigate();
     const { postId: postIdParam } = useParams();
 
-    const { users } = useContext(AppContext);
+    const { users, setPost, getPost } = useContext(AppContext);
     const [comments, setComments] = useState<Comment[]>([]);
     const associatedUser = useMemo(() => users.find(user => user.id === post?.userId), [users]);
 
 
     const postRedirectHandler = () => {
-        if (!postIdParam) navigate(`/posts/${post?.id}`)
+        if (!postIdParam) {
+            setPost(post)
+            navigate(`/posts/${post?.id}`, { preventScrollReset: true })
+        }
     }
 
     const getPostComments = async (id: number | string | undefined) => {
@@ -37,13 +41,14 @@ const SinglePost = ({ post }: SinglePostProps) => {
     }
 
     useEffect(() => {
+        if (postIdParam && getPost) getPost(postIdParam)
         if (post && getPostComments) getPostComments(post.id)
-    }, [post])
+    }, [post, postIdParam])
 
     return (
         <div key={post?.id} className='single-post-wrapper'>
             <div className='single-post-container' onClick={postRedirectHandler}>
-                {postIdParam && <Link to="/posts">back</Link>}
+                {postIdParam && <Link to="/posts" preventScrollReset={true} onClick={() => setPost(undefined)}>back</Link>}
                 <div className='post-info-container'>
                     <h3>{associatedUser?.name}</h3>
                     <h3>{post?.title}</h3>
@@ -64,4 +69,4 @@ const SinglePost = ({ post }: SinglePostProps) => {
     )
 }
 
-export default SinglePost
+export default LoggerHOC(SinglePost)
