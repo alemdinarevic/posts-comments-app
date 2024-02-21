@@ -7,13 +7,14 @@ import LoggerHOC from 'utils/logger-hoc';
 
 type PostsHomeProps = {
     posts: PostWithAuthor[]
+    postsLoading?: boolean
 }
 
-const PostsHome = ({ posts }: PostsHomeProps) => {
+const PostsHome = ({ posts, postsLoading = false }: PostsHomeProps) => {
     const { searchUser, setSearchUser } = useContext(AppContext)
 
     const filteredPosts = useMemo(
-        () => posts?.filter(post => post.author?.name.toLowerCase().includes(searchUser.toLowerCase())),
+        () => posts.filter(post => post.author?.name.toLowerCase().includes(searchUser.toLowerCase())),
         [searchUser, posts]
     )
 
