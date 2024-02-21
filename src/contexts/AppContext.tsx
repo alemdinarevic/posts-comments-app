@@ -3,7 +3,7 @@ import server from "api/server";
 import { Post, EMPTY_POST, Comment } from "api/types/post";
 import { User } from "api/types/user";
 import { useQuery } from "@tanstack/react-query";
-import debounce from "utils/debounce";
+import { useDebounce } from "utils/debounce";
 
 type ContextProps = {
     children: React.ReactNode
@@ -21,6 +21,7 @@ type ContextType = {
     getPost?: (id: number | string | undefined) => Promise<Post>,
     searchUser: string,
     setSearchUser: (val: string) => void
+    debouncedSearch: string,
     postComments?: Comment[]
 }
 
@@ -31,7 +32,8 @@ const INIT_STATE = {
     postId: '',
     setPostId: () => { },
     searchUser: '',
-    setSearchUser: () => { }
+    setSearchUser: () => { },
+    debouncedSearch: ''
 }
 
 export const AppContext = createContext<ContextType>(INIT_STATE)
@@ -60,9 +62,7 @@ const AppContextProvider = ({ children }: ContextProps) => {
         queryFn: () => getPostComments(postId)
     })
 
-    const debounceSearchUser = (val: string) => {
-        debounce(() => setSearchUser(val), 2000)
-    }
+    const debouncedSearch = useDebounce(searchUser);
 
     const getUsers = async () => {
         try {
@@ -116,7 +116,8 @@ const AppContextProvider = ({ children }: ContextProps) => {
                 postId,
                 setPostId,
                 searchUser,
-                setSearchUser: debounceSearchUser,
+                setSearchUser,
+                debouncedSearch,
                 postComments: postComments?.data
             }}>
             {children}

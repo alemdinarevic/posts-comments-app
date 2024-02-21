@@ -11,13 +11,14 @@ type PostsHomeProps = {
 }
 
 const PostsHome = ({ posts, postsLoading = false }: PostsHomeProps) => {
-    const { searchUser, setSearchUser } = useContext(AppContext)
+    const { searchUser, setSearchUser, debouncedSearch } = useContext(AppContext)
 
     const filteredPosts = useMemo(
         () => posts.filter(post => post.author?.name.toLowerCase().includes(searchUser.toLowerCase())),
-        [searchUser, posts]
+        [posts, debouncedSearch]
     )
 
+    console.log({ filteredPosts })
     return (
         <div className='posts-container'>
             <h2>Posts Feed</h2>
