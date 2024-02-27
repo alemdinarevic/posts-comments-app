@@ -1,7 +1,9 @@
-import { createContext, useEffect, useMemo, useState } from "react";
+import { createContext, useMemo, useState } from "react";
 import server from "api/server";
-import { Post, EMPTY_POST } from "api/types/post";
+import { Post, EMPTY_POST, Comment } from "api/types/post";
 import { User } from "api/types/user";
+import { useQuery } from "@tanstack/react-query";
+import { useDebounce } from "utils/debounce";
 
 type ContextProps = {
     children: React.ReactNode
@@ -13,77 +15,111 @@ type ContextType = {
     users: User[],
     posts: PostWithAuthor[],
     post?: Post,
-    setPost: React.Dispatch<React.SetStateAction<Post | undefined>>,
+    // setPost?: React.Dispatch<React.SetStateAction<Post | undefined>>,
+    postId: string,
+    setPostId: React.Dispatch<React.SetStateAction<string>>,
     getPost?: (id: number | string | undefined) => Promise<Post>,
     searchUser: string,
-    setSearchUser: React.Dispatch<React.SetStateAction<string>>
+    setSearchUser: (val: string) => void
+    debouncedSearch: string,
+    postComments?: Comment[]
 }
 
 const INIT_STATE = {
     users: [],
     posts: [],
     setPost: () => { },
+    postId: '',
+    setPostId: () => { },
     searchUser: '',
-    setSearchUser: () => { }
+    setSearchUser: () => { },
+    debouncedSearch: ''
 }
 
 export const AppContext = createContext<ContextType>(INIT_STATE)
 
 const AppContextProvider = ({ children }: ContextProps) => {
-    const [users, setUsers] = useState<User[]>([]);
-    const [posts, setPosts] = useState<Post[]>([]);
-    const [post, setPost] = useState<Post>();
+    const [postId, setPostId] = useState<string>('');
     const [searchUser, setSearchUser] = useState<string>('')
 
+    const { data: posts, isLoading: postsLoading } = useQuery({
+        queryKey: ["posts"],
+        queryFn: () => getPosts()
+    })
+
+    const { data: users } = useQuery({
+        queryKey: ["users"],
+        queryFn: () => getUsers()
+    })
+
+    const { data: postData } = useQuery({
+        queryKey: ["post", postId],
+        queryFn: () => getPost(postId)
+    })
+
+    const { data: postComments } = useQuery({
+        queryKey: ["post", postId, "comments"],
+        queryFn: () => getPostComments(postId)
+    })
+
+    const debouncedSearch = useDebounce(searchUser);
+
     const getUsers = async () => {
-        let users: User[] = []
         try {
             const res = await server.get('/users');
-            setUsers(res.data)
-            users = res.data;
+            return res
         } catch (e) {
             console.error(e)
         }
-        return users;
     }
 
     const getPosts = async () => {
-        let posts: Post[] = []
         try {
             const res = await server.get('/posts');
-            setPosts(res.data);
-            posts = res.data;
+            return res
         } catch (e) {
             console.error(e)
         }
-        return posts;
     }
 
     const getPost = async (id: number | string | undefined) => {
-        let post: Post = EMPTY_POST
         try {
-            if (typeof id === undefined) return EMPTY_POST
             const res = await server.get(`/posts/${id}`);
-            setPost(res.data);
-            post = res.data;
+            return res
         } catch (e) {
             console.error(e)
         }
-        return post;
     }
 
+    const getPostComments = async (id: number | string | undefined) => {
+        try {
+            const res = await server.get(`/posts/${id}/comments`);
+            return res
+        } catch (e) {
+            console.error(e)
+        }
+    }
+
+
     const postsWithUsers = useMemo(() =>
-        posts.map(post => ({ ...post, author: users.find(user => user.id === post.userId) as User })),
+        !postsLoading && posts ? posts.data.map((post: Post) => ({ ...post, author: users?.data.find((user: User) => user.id === post.userId) as User })) : [],
         [posts, users]
     )
 
-    useEffect(() => {
-        getPosts();
-        getUsers();
-    }, [])
 
     return (
-        <AppContext.Provider value={{ users, posts: postsWithUsers, post, setPost, getPost, searchUser, setSearchUser }}>
+        <AppContext.Provider
+            value={{
+                users: users?.data ?? [],
+                posts: postsWithUsers ?? [],
+                post: postData?.data ?? EMPTY_POST,
+                postId,
+                setPostId,
+                searchUser,
+                setSearchUser,
+                debouncedSearch,
+                postComments: postComments?.data
+            }}>
             {children}
         </AppContext.Provider>
     )

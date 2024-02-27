@@ -1,19 +1,15 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import { AppContext } from 'contexts/AppContext';
-import { useParams } from "react-router-dom";
 import SinglePost from 'components/post';
 import LoggerHOC from 'utils/logger-hoc';
+import { Post as PostType } from 'api/types/post';
 
 const Post = () => {
-    const { postId } = useParams();
-    const { post, getPost } = useContext(AppContext)
 
-    useEffect(() => {
-        if (getPost) getPost(postId)
-    }, []);
+    const { post } = useContext(AppContext)
 
     return (
-        <SinglePost post={post} />
+        <SinglePost post={post as PostType} />
     )
 }
 
