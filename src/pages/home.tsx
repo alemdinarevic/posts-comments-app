@@ -2,8 +2,6 @@ import React, { useContext } from 'react'
 import { AppContext } from 'contexts/AppContext';
 import HomePage from 'components/home';
 import LoggerHOC from 'utils/logger-hoc';
-import { useQuery } from '@tanstack/react-query';
-import { getPosts } from 'api/posts';
 
 const Home = () => {
 

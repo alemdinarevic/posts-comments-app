@@ -1,4 +1,4 @@
-import { createContext, useEffect, useMemo, useState } from "react";
+import { createContext, useMemo, useState } from "react";
 import server from "api/server";
 import { Post, EMPTY_POST, Comment } from "api/types/post";
 import { User } from "api/types/user";
@@ -47,17 +47,17 @@ const AppContextProvider = ({ children }: ContextProps) => {
         queryFn: () => getPosts()
     })
 
-    const { data: users, isLoading: usersLoading } = useQuery({
+    const { data: users } = useQuery({
         queryKey: ["users"],
         queryFn: () => getUsers()
     })
 
-    const { data: postData, isLoading: postLoading } = useQuery({
+    const { data: postData } = useQuery({
         queryKey: ["post", postId],
         queryFn: () => getPost(postId)
     })
 
-    const { data: postComments, isLoading: commentsLoading } = useQuery({
+    const { data: postComments } = useQuery({
         queryKey: ["post", postId, "comments"],
         queryFn: () => getPostComments(postId)
     })

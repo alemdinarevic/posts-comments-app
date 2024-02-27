@@ -1,5 +1,5 @@
 import React, { useContext, useMemo, useState } from 'react'
-import { Comment, EMPTY_COMMENT, Post } from 'api/types/post'
+import { Comment, Post } from 'api/types/post'
 
 import './styles.css';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -17,7 +17,6 @@ const SinglePost = ({ post }: SinglePostProps) => {
     const { postId: postIdParam } = useParams();
 
     const { users, setPostId } = useContext(AppContext);
-    const [comments, setComments] = useState<Comment[]>([]);
     const associatedUser = useMemo(() => users.find(user => user.id === post?.userId), [users]);
 
     const { data: postComments, isLoading: commentsLoading } = useQuery({
@@ -37,7 +36,6 @@ const SinglePost = ({ post }: SinglePostProps) => {
         try {
             // if (typeof id === undefined) return [EMPTY_COMMENT]
             const res = await server.get(`/posts/${id}/comments`);
-            setComments(res.data);
             comments = res.data;
             return res
         } catch (e) {
